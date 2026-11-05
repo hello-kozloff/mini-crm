@@ -4,6 +4,8 @@
 
 **Стек:** React 19 + TypeScript + Vite, Mantine, TanStack Query, react-router, Supabase (Postgres + Auth). Деплой — Vercel.
 
+**Демо:** https://mini-crm-olive.vercel.app (доступы переданы отдельно)
+
 - [docs/FOR_MANAGER.md](docs/FOR_MANAGER.md) — объяснение для руководителя без технических терминов
 - [docs/DECISIONS.md](docs/DECISIONS.md) — решения, допущения и что не вошло
 
