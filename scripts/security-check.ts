@@ -2,7 +2,7 @@
 //   SEED_PASSWORD=... bun scripts/security-check.ts
 // Uses only the public anon key + demo users' passwords. Creates temporary fixtures
 // prefixed with [security-check] and removes them at the end.
-import { anonClient, env, signIn, userId, type Client } from './common'
+import { ANON_KEY, anonClient, env, signIn, SUPABASE_URL, userId, type Client } from './common'
 
 const password = env('SEED_PASSWORD')
 const PREFIX = '[security-check]'
@@ -71,11 +71,14 @@ try {
   await expectDenied('Аноним не читает историю', () => anon.from('task_history').select('id'))
   await expectDenied('Аноним не вызывает смену статуса', () => rpc(anon, own, 'in_progress'))
   {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: ANON_KEY } })
+    const settings = (await res.json()) as { disable_signup?: boolean }
+    check('Открытая регистрация отключена (настройка Auth)', settings.disable_signup === true, `disable_signup=${settings.disable_signup}`)
     const { data, error } = await anon.auth.signUp({
       email: `intruder-${Date.now()}@example.com`,
       password: 'Intruder-123456',
     })
-    check('Открытая регистрация отключена', !!error && !data.user, error ? `error: ${error.message}` : 'SIGN-UP SUCCEEDED')
+    check('Попытка регистрации отклонена', !!error && !data.user, error ? `error: ${error.message}` : 'SIGN-UP SUCCEEDED')
   }
 
   // --- Executor: reading ---
